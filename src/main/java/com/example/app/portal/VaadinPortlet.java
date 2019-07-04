@@ -1,9 +1,11 @@
 package com.example.app.portal;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Enumeration;
 import java.util.Locale;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -26,12 +28,14 @@ import com.example.app.portal.impl.VaadinLiferayRequest;
 import com.example.app.portal.impl.VaadinWebLogicPortalRequest;
 import com.example.app.portal.impl.VaadinWebSpherePortalRequest;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.WebComponentExporter;
 import com.vaadin.flow.function.DeploymentConfiguration;
 import com.vaadin.flow.internal.CurrentInstance;
 import com.vaadin.flow.server.DefaultDeploymentConfiguration;
 import com.vaadin.flow.server.ServiceException;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinSession;
+import com.vaadin.flow.server.webcomponent.WebComponentConfigurationRegistry;
 
 public class VaadinPortlet extends GenericPortlet {
 
@@ -81,7 +85,7 @@ public class VaadinPortlet extends GenericPortlet {
 
     protected VaadinPortletService createPortletService(
             DeploymentConfiguration deploymentConfiguration)
-                    throws ServiceException {
+            throws ServiceException {
         VaadinPortletService service = new VaadinPortletService(this,
                 deploymentConfiguration);
         service.init();
@@ -161,6 +165,16 @@ public class VaadinPortlet extends GenericPortlet {
     }
 
     @Override
+    public void render(RenderRequest request, RenderResponse response)
+            throws PortletException, IOException {
+        String tag = getMainComponentTag();
+        PrintWriter writer = response.getWriter();
+        writer.write(
+                "<script src='/myportlet/web-component/main-view.js'></script>");
+        writer.write("<" + tag + "></" + tag + ">");
+    }
+
+    @Override
     public void processAction(ActionRequest request, ActionResponse response)
             throws PortletException, IOException {
         handleRequest(request, response);
@@ -213,6 +227,34 @@ public class VaadinPortlet extends GenericPortlet {
         } else {
             return null;
         }
+    }
+
+    /**
+     * Gets the tag for the main component in the portlet.
+     * <p>
+     * By default uses the one and only exported web component.
+     *
+     * @return the tag of the main component to use
+     * @throws PortletException
+     *             if the main component could not be detected
+     */
+    protected String getMainComponentTag() throws PortletException {
+        WebComponentConfigurationRegistry registry = WebComponentConfigurationRegistry
+                .getInstance(getService().getContext());
+        int exportedComponents = registry.getConfigurations().size();
+        if (exportedComponents == 0) {
+            throw new PortletException("No web components exported. Add a "
+                    + WebComponentExporter.class.getSimpleName()
+                    + " which exports your main component");
+        } else if (exportedComponents > 1) {
+            String definedComponents = registry.getConfigurations().stream()
+                    .map(conf -> conf.getTag())
+                    .collect(Collectors.joining(", "));
+            throw new PortletException("Multiple web components are exported: "
+                    + definedComponents
+                    + ". Export only one web component or override getMainComponentTag in the portlet class");
+        }
+        return registry.getConfigurations().iterator().next().getTag();
     }
 
 }

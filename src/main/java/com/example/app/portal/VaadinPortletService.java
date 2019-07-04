@@ -31,7 +31,6 @@ import javax.portlet.RenderRequest;
 import com.vaadin.flow.function.DeploymentConfiguration;
 import com.vaadin.flow.server.PwaRegistry;
 import com.vaadin.flow.server.RequestHandler;
-import com.vaadin.flow.server.RouteRegistry;
 import com.vaadin.flow.server.ServiceException;
 import com.vaadin.flow.server.ServletHelper.RequestType;
 import com.vaadin.flow.server.VaadinContext;
@@ -312,11 +311,6 @@ public class VaadinPortletService extends VaadinService {
                 getSessionAttributeName(), PortletSession.APPLICATION_SCOPE);
     }
 
-    @Override
-    protected RouteRegistry getRouteRegistry() {
-        // TODO Auto-generated method stub
-        return null;
-    }
 
     @Override
     protected PwaRegistry getPwaRegistry() {
@@ -378,7 +372,7 @@ public class VaadinPortletService extends VaadinService {
 
     @Override
     protected VaadinContext constructVaadinContext() {
-        // TODO Auto-generated method stub
-        return null;
+        return new VaadinPortletContext(getPortlet().getPortletContext());
     }
+
 }

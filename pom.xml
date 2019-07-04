@@ -4,7 +4,7 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.example.app</groupId>
-    <artifactId>portlet</artifactId>
+    <artifactId>myportlet</artifactId>
     <name>portlet</name>
     <version>2.0-SNAPSHOT</version>
     <packaging>war</packaging>
@@ -17,7 +17,7 @@
         <failOnMissingWebXml>false</failOnMissingWebXml>
 
         <vaadin.version>14.0.0.rc3</vaadin.version>
-
+        <flow.version>2.1-SNAPSHOT</flow.version>
         <drivers.downloader.phase>pre-integration-test</drivers.downloader.phase>
 
         <liferay.portal-service.version>6.2.5</liferay.portal-service.version>
@@ -83,6 +83,13 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>com.vaadin</groupId>
+                <artifactId>flow-bom</artifactId>
+                <type>pom</type>
+                <scope>import</scope>
+                <version>${flow.version}</version>
+            </dependency>
             <dependency>
                 <groupId>com.vaadin</groupId>
                 <artifactId>vaadin-bom</artifactId>
@@ -172,6 +179,7 @@
     </dependencies>
 
     <build>
+    	<finalName>${project.artifactId}</finalName>
         <defaultGoal>jetty:run</defaultGoal>
         <plugins>
             <plugin>
@@ -200,8 +208,8 @@
                 exists yet. -->
             <plugin>
                 <groupId>com.vaadin</groupId>
-                <artifactId>vaadin-maven-plugin</artifactId>
-                <version>${vaadin.version}</version>
+                <artifactId>flow-maven-plugin</artifactId>
+                <version>${flow.version}</version>
                 <executions>
                     <execution>
                         <goals>
