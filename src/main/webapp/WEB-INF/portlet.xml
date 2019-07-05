@@ -7,7 +7,7 @@
     <portlet>
         <portlet-name>myportlet1</portlet-name>
         <display-name>Flow Test Portlet</display-name>
-        <portlet-class>com.example.app.MyPortlet</portlet-class>
+        <portlet-class>org.vaadin.artur.portlet.MyPortlet</portlet-class>
         <expiration-cache>0</expiration-cache>
         <supports>
             <mime-type>text/html</mime-type>
